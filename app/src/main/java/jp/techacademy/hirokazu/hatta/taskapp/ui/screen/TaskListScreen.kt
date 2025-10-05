@@ -1,5 +1,6 @@
 package jp.techacademy.hirokazu.hatta.taskapp.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,9 +34,23 @@ import androidx.compose.runtime.mutableStateOf
 import jp.techacademy.hirokazu.hatta.taskapp.data.Task
 import jp.techacademy.hirokazu.hatta.taskapp.ui.viewmodel.TaskViewModel
 
-class TaskListScreen {
-}
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+
+
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.Alignment
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,15 +58,18 @@ class TaskListScreen {
 fun TaskListScreen(
     viewModel: TaskViewModel? = null,
     onAddTaskClick: () -> Unit = {},
-    onTaskClick: (Task) -> Unit = {}
+    onTaskClick: (Task) -> Unit = {},
+    onTaskDelete: (Task) -> Unit = {}
 ) {
-    // サンプルタスクリスト
-    //val sampleTasks = listOf("aaa", "bbb", "ccc")
-
     // タスクリストを取得
-    val tasks by viewModel?.allTasks?.collectAsState() ?: run { androidx.compose.runtime.remember { mutableStateOf(emptyList<Task>()) }}
+    val tasks by viewModel?.allTasks?.collectAsState() ?: run { androidx.compose.runtime.remember { mutableStateOf(emptyList<Task>()) } }
+
+    // 削除確認ダイアログの状態管理
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var taskToDelete by remember { mutableStateOf<Task?>(null) }
     Scaffold(
         topBar = {
+
             TopAppBar(
                 title = { Text("TaskApp") },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -78,9 +96,54 @@ fun TaskListScreen(
         }
     ) { innerPadding ->
         //innerPadding ->
-        //
+
+
+
         //Scaffoldが計算した余白を受け取り、その余白を考慮してUIを配置するラムダ
-        LazyColumn(
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp), // 上下の間隔
+
+        ) {
+          //絞り込み（課題用）
+
+            var searchCategory by remember { mutableStateOf("") }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+
+                OutlinedTextField(
+                    value = searchCategory,
+                    onValueChange = { searchCategory = it },
+                    label = { Text("カテゴリー") },
+                    modifier = Modifier.weight(1f)
+                )
+
+
+                Button(
+                    onClick = {
+                        // ボタン押したらViewModelのカテゴリ絞り込みメソッドを呼ぶ
+                        viewModel?.viewModelScope?.launch {
+                            viewModel?.selectTasks (searchCategory)
+                        }
+                    }
+                ) {
+                    Text("検索")
+                }
+            }
+
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -88,27 +151,70 @@ fun TaskListScreen(
             items(tasks) { task ->
                 TaskItem(
                     task = task,
-                    onClick = { onTaskClick(task) }
+                    onClick = { onTaskClick(task) },
+                    onLongClick = {
+                        taskToDelete = task
+                        showDeleteDialog = true
+                    }
                 )
             }
-        }
+        }}
+    }
+// 削除確認ダイアログ
+    if (showDeleteDialog && taskToDelete != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                taskToDelete = null
+            },
+            title = { Text("タスクの削除") },
+            text = { Text("「${taskToDelete?.title}」を削除しますか？") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        taskToDelete?.let { onTaskDelete(it) }
+                        showDeleteDialog = false
+                        taskToDelete = null
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        taskToDelete = null
+                    }
+                ) {
+                    Text("キャンセル")
+                }
+            }
+        )
     }
 }
 
-/**
- * タスク項目のUI
- */
+
+
+
+  //タスク項目のUI
+
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskItem(
    // title: String,
     task: Task,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column (
@@ -126,6 +232,12 @@ fun TaskItem(
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1
             )
+            //カテゴリ・課題用
+            Text(
+                text = task.taskCategory,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1
+            )
             Text(
                 text = task.date,
                 style = MaterialTheme.typography.bodySmall
@@ -134,14 +246,13 @@ fun TaskItem(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun TaskListScreenPreview() {
     TaskAppTheme {
         // プレビュー用のダミーデータ
-        val dummyTask = Task(id = 1, title = "作業", contents = "プログラムを書いてPUSHする", date = "2025-03-05 12:00")
+        val dummyTask = Task(id = 1, title = "作業", contents = "プログラムを書いてPUSHする", taskCategory = "homework", date = "2025-03-05 12:00")
         TaskListScreen()
-    }
-}
+    }}*/
 
-//    ksp(libs.androidx.room.compiler)
+

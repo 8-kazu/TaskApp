@@ -64,6 +64,15 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
+
+    //タスクを絞り込む（課題用）
+    fun selectTasks (taskCategory: String){
+        viewModelScope.launch{
+            repository.selectTasks(taskCategory)
+
+        }
+    }
+
     /**
      * ViewModelのファクトリークラス
      */

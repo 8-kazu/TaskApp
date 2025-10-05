@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 /**
  * アプリケーションのデータベース
  */
-@Database(entities = [Task::class], version = 1, exportSchema = false)
+@Database(entities = [Task::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     /**
      * TaskDaoを取得する
