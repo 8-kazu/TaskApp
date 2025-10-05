@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import jp.techacademy.hirokazu.hatta.taskapp.data.Task
 import jp.techacademy.hirokazu.hatta.taskapp.data.TaskRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -64,11 +65,14 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
+    private val _filteredTasks = MutableStateFlow<List<Task>>(emptyList())
+    val filteredTasks: StateFlow<List<Task>> = _filteredTasks
 
     //タスクを絞り込む（課題用）
     fun selectTasks (taskCategory: String){
         viewModelScope.launch{
-            repository.selectTasks(taskCategory)
+            val result = repository.selectTasks(taskCategory)
+            _filteredTasks.value = result
 
         }
     }

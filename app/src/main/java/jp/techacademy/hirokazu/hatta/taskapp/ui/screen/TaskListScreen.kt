@@ -62,7 +62,15 @@ fun TaskListScreen(
     onTaskDelete: (Task) -> Unit = {}
 ) {
     // タスクリストを取得
-    val tasks by viewModel?.allTasks?.collectAsState() ?: run { androidx.compose.runtime.remember { mutableStateOf(emptyList<Task>()) } }
+   // val tasks by viewModel?.allTasks?.collectAsState() ?: run { androidx.compose.runtime.remember { mutableStateOf(emptyList<Task>()) } }
+
+    val allTasks by viewModel?.allTasks?.collectAsState() ?: remember { mutableStateOf(emptyList<Task>()) }
+    val filteredTasks by viewModel?.filteredTasks?.collectAsState() ?: remember { mutableStateOf(emptyList<Task>()) }
+
+// 検索結果が空でなければfilteredTasksを、そうでなければallTasksを表示
+    val tasks = if (filteredTasks.isNotEmpty()) filteredTasks else allTasks
+
+
 
     // 削除確認ダイアログの状態管理
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -103,11 +111,13 @@ fun TaskListScreen(
         Column (
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(innerPadding)
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp), // 上下の間隔
 
         ) {
           //絞り込み（課題用）
+
 
             var searchCategory by remember { mutableStateOf("") }
 
@@ -131,9 +141,9 @@ fun TaskListScreen(
                 Button(
                     onClick = {
                         // ボタン押したらViewModelのカテゴリ絞り込みメソッドを呼ぶ
-                        viewModel?.viewModelScope?.launch {
+                        //viewModel?.viewModelScope?.launch {
                             viewModel?.selectTasks (searchCategory)
-                        }
+                        //}
                     }
                 ) {
                     Text("検索")
