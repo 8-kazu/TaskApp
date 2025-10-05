@@ -12,5 +12,6 @@ data class Task(
     val id: Int = 0,
     val title: String,
     val contents: String,
+    val taskCategory: String,
     val date: String
 )

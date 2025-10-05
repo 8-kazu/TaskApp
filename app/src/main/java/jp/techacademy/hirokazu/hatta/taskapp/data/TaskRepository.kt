@@ -49,4 +49,9 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun deleteAllTasks() {
         taskDao.deleteAllTasks()
     }
+
+//タスク絞り込み（課題用）
+    suspend fun selectTasks(taskCategory: String): List<Task>{
+        return taskDao.selectTasks(taskCategory)
+    }
 }
