@@ -109,7 +109,7 @@ fun TaskInputScreen(
     // 入力値の状態管理
     var title by remember { mutableStateOf(task?.title ?: "") }
     var contents by remember { mutableStateOf(task?.contents ?: "") }
-    var taskCategory by remember { mutableStateOf(task?.taskCategory ?: "") }
+    var category by remember { mutableStateOf(task?.category ?: "") }
 
     // カレンダーの初期値は現在時刻から1日後
     val calendar = remember {
@@ -223,8 +223,8 @@ fun TaskInputScreen(
 
             // カテゴリ入力フィールド（課題用）
             OutlinedTextField(
-                value = taskCategory,
-                onValueChange = { taskCategory = it },
+                value = category,
+                onValueChange = { category = it },
                 label = { Text("カテゴリー") },
                 modifier = Modifier.fillMaxWidth(),
                 //minLines = 3
@@ -331,7 +331,7 @@ fun TaskInputScreen(
                         task.copy(
                             title = title,
                             contents = contents,
-                            taskCategory = taskCategory,
+                            category = category,
                             date = dateText
 
                         )
@@ -340,7 +340,7 @@ fun TaskInputScreen(
                         Task(
                             title = title,
                             contents = contents,
-                            taskCategory = taskCategory,
+                            category = category,
                             date = dateText
                         )
                     }

@@ -64,6 +64,6 @@ interface TaskDao {
     suspend fun deleteAllTasks()
 
     /*タスクを絞り込む（課題用）*/
-    @Query("SELECT * FROM tasks WHERE taskCategory = :taskCategory ORDER BY date ASC")
-    suspend fun selectTasks(taskCategory: String): List<Task>
+    @Query("SELECT * FROM tasks WHERE category = :category ORDER BY date ASC")
+    suspend fun selectTasks(category: String): List<Task>
 }

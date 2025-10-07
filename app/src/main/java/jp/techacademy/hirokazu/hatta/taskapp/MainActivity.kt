@@ -62,13 +62,10 @@ class MainActivity : ComponentActivity() {
                     viewModel = taskViewModel,
                     onAddTaskClick = {
                         // 新規タスク追加ボタンがクリックされた時の処理
-                        // 後ほど実装予定
-                        //Toast.makeText(this, "新規タスク追加", Toast.LENGTH_SHORT).show()
+
                     },
                     onTaskClick = { task :Task->
-                        // タスク項目がクリックされた時の処理
-                        // 後ほど実装予定
-                       // Toast.makeText(this, "タスク: ${task.title} がクリックされました", Toast.LENGTH_SHORT).show()
+
                     }
                 )
 
@@ -159,25 +156,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-
-    /**
-     * データベースを初期化し、サンプルデータを登録する
-     */
-    /*private*/ /*fun initializeDatabase() {
-        lifecycleScope.launch {
-            // 既存のデータをすべて削除
-            taskViewModel.deleteAllTasks()
-
-            // サンプルデータを登録
-           val sampleTask = Task(
-                title = "作業",
-                contents = "プログラムを書いてPUSHする",
-               taskCategory = "homework",
-                date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
-            )
-            taskViewModel.insertTask(sampleTask)
-        }*/
     }
 
 }

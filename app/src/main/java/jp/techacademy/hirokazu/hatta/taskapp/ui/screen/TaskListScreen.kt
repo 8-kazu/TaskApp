@@ -62,8 +62,6 @@ fun TaskListScreen(
     onTaskDelete: (Task) -> Unit = {}
 ) {
     // タスクリストを取得
-   // val tasks by viewModel?.allTasks?.collectAsState() ?: run { androidx.compose.runtime.remember { mutableStateOf(emptyList<Task>()) } }
-
     val allTasks by viewModel?.allTasks?.collectAsState() ?: remember { mutableStateOf(emptyList<Task>()) }
     val filteredTasks by viewModel?.filteredTasks?.collectAsState() ?: remember { mutableStateOf(emptyList<Task>()) }
 
@@ -103,7 +101,7 @@ fun TaskListScreen(
             }
         }
     ) { innerPadding ->
-        //innerPadding ->
+
 
 
 
@@ -124,9 +122,9 @@ fun TaskListScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 0.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+               verticalAlignment = Alignment.CenterVertically
             ) {
 
 
@@ -151,12 +149,13 @@ fun TaskListScreen(
             }
 
 
-            Spacer(modifier = Modifier.width(8.dp))
+                //Spacer(modifier = Modifier.width(3.dp))
 
             LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                //.padding(innerPadding)
+                .padding(top = 8.dp)
         ) {
             items(tasks) { task ->
                 TaskItem(
@@ -244,7 +243,7 @@ fun TaskItem(
             )
             //カテゴリ・課題用
             Text(
-                text = task.taskCategory,
+                text = task.category,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1
             )
@@ -256,13 +255,6 @@ fun TaskItem(
     }
 }
 
-/*@Preview(showBackground = true)
-@Composable
-fun TaskListScreenPreview() {
-    TaskAppTheme {
-        // プレビュー用のダミーデータ
-        val dummyTask = Task(id = 1, title = "作業", contents = "プログラムを書いてPUSHする", taskCategory = "homework", date = "2025-03-05 12:00")
-        TaskListScreen()
-    }}*/
+
 
 

@@ -51,7 +51,7 @@ class TaskRepository(private val taskDao: TaskDao) {
     }
 
 //タスク絞り込み（課題用）
-    suspend fun selectTasks(taskCategory: String): List<Task>{
-        return taskDao.selectTasks(taskCategory)
+    suspend fun selectTasks(category: String): List<Task>{
+        return taskDao.selectTasks(category)
     }
 }

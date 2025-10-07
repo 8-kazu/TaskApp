@@ -69,9 +69,9 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     val filteredTasks: StateFlow<List<Task>> = _filteredTasks
 
     //タスクを絞り込む（課題用）
-    fun selectTasks (taskCategory: String){
+    fun selectTasks (category: String){
         viewModelScope.launch{
-            val result = repository.selectTasks(taskCategory)
+            val result = repository.selectTasks(category)
             _filteredTasks.value = result
 
         }
